@@ -1,72 +1,52 @@
-import { useEffect, useId, useState, memo } from "react";
+import { useEffect, useState, memo, useDeferredValue, Suspense } from "react";
 import "./App.css";
+import PokemonList from "./PokemonList";
+import useDebounce from "./useDebounce";
 
 function App() {
   const [apiResult, setApiResult] = useState([]);
-  const [searchItem, setSearchItem] = useState("");
   const [filteredResult, setFilteredResult] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [imageURL, setImageURL] = useState("");
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const ITEM_HEIGHT = 20;
-  const VISIBLE_ITEMS = 10;
-  const TOTAL_ITEMS = 1302;
-  const BUFFER_SIZE = 5;
+  const [searchItem, setSearchItem] = useState("");
+  const defferedSearchValue = useDebounce(searchItem, 500);
 
   useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon/?limit=1302")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.results.length);
-        setApiResult(data.results);
-        setFilteredResult(data.results);
-      })
-      .catch((err) => {
-        console.log(err);
-        setError(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    if (localStorage.length === 0) {
+      fetch("https://pokeapi.co/api/v2/pokemon/?limit=100")
+        .then((response) => response.json())
+        .then((data) => {
+          setApiResult(data.results);
+          setFilteredResult(data.results);
+          localStorage.setItem("results", JSON.stringify(data.results));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      console.log("first");
+    } else {
+      setApiResult(JSON.parse(localStorage.getItem("results")));
+      setFilteredResult(JSON.parse(localStorage.getItem("results")));
+
+      console.log("second");
+    }
   }, []);
 
   useEffect(() => {
-    const filteredValue = apiResult.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchItem.toLowerCase())
-    );
-    setFilteredResult(filteredValue);
-  }, [searchItem]);
+    if (searchItem !== null) {
+      const filteredValue = apiResult.filter((pokemon) =>
+        pokemon.name.toLowerCase().includes(defferedSearchValue.toLowerCase())
+      );
+      setFilteredResult(filteredValue);
+    }
+  }, [defferedSearchValue]);
 
   function handleChange(e) {
-    const searchValue = e.target.value;
-    setSearchItem(searchValue);
-  }
-  function handleClick(e) {
-    // console.log(e.target.innerText);
-    fetch(
-      `https://pokeapi.co/api/v2/pokemon/${e.target.innerText.replaceAll(
-        " ",
-        "-"
-      )}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setImageURL(data.sprites.front_default);
-      })
-      .catch((err) => {
-        console.log("not found");
-      });
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    console.log(e.target[0].value);
+    setSearchItem(e.target.value);
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form>
         <input
           type="text"
           value={searchItem}
@@ -74,25 +54,11 @@ function App() {
           onChange={handleChange}
         ></input>
       </form>
-
-      {loading && <p>Loading data...</p>}
-      {error && <p>Data not found</p>}
-      <img src={imageURL}></img>
-      <ul
-        onScroll={(e) => {
-          setScrollPosition(e.currentTarget.scrollTop);
-        }}
-      >
-        {!loading && !error && filteredResult.length === 0 ? (
-          <p>No results found sorry</p>
-        ) : (
-          filteredResult.map((val, index) => (
-            <li key={index} onClick={handleClick}>
-              {val.name.replaceAll("-", " ")}
-            </li>
-          ))
-        )}
-      </ul>
+      {defferedSearchValue === "" ? (
+        <p>Search ...</p>
+      ) : (
+        <PokemonList list={filteredResult}></PokemonList>
+      )}
     </>
   );
 }
