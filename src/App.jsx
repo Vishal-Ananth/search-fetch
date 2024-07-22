@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import "./App.css";
 import PokemonList from "./PokemonList";
@@ -8,7 +7,7 @@ function App() {
 	const [apiResult, setApiResult] = useState([]);
 	const [filteredResult, setFilteredResult] = useState([]);
 	const [searchItem, setSearchItem] = useState("");
-	const debouncedSearchValue = useDebounce(searchItem, 500);
+	const debouncedSearchValue = useDebounce(searchItem, 1000);
 
 	useEffect(() => {
 		if (localStorage.length === 0) {
@@ -63,13 +62,13 @@ function App() {
 				></input>
 			</form>
 
-			{/* <div className="display"> */}
+			<div className="display">
 			{debouncedSearchValue === "" ? (
 				<p>Search Pokedex</p>
 			) : filteredResult.length !== apiResult.length ? (
 				<PokemonList list={filteredResult}></PokemonList>
 			) : null}
-			{/* </div> */}
+			</div>
 		</>
 	);
 }
