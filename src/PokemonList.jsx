@@ -1,23 +1,21 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
+import useDebounce from "./useDebounce";
 
 export default function PokemonList({ list }) {
 	const [filteredUrl, setFilteredUrl] = useState([]);
 	const [showCards, setShowCards] = useState([]);
-	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		setFilteredUrl([]);
 	}, [showCards]);
 
 	useEffect(() => {
-		setLoading(true);
 		filteredUrl.map((val) =>
 			fetch(val)
 				.then((response) => response.json())
 				.then((data) => setShowCards((prevVal) => [data, ...prevVal]))
-				.finally(setLoading(false))
 		);
 	}, [filteredUrl]);
 
@@ -29,21 +27,26 @@ export default function PokemonList({ list }) {
 	useState(() => {});
 
 	return (
-		<>
-			{loading && "loading..."}
+		<div className="display">
 			{showCards !== null ? (
 				showCards.length !== 0 ? (
-					showCards.map((result, index) => (
-						<div key={index} className="card">
-							<h1>{result.id}</h1>
-							<p>{result.name}</p>
-							<img src={result.sprites.front_default}></img>
+					showCards.map((result) => (
+						<div key={result.id} className="card">
+							<h2>pokedex id : {result.id}</h2>
+							<p>{result.name.replaceAll("-", " ")}</p>
+							<img
+								src={result.sprites.front_default}
+								alt={`${result.name.replaceAll(
+									"-",
+									" "
+								)} pokemon image`}
+							></img>
 						</div>
 					))
 				) : (
 					<h3>Pokemon not found!</h3>
 				)
 			) : null}
-		</>
+		</div>
 	);
 }

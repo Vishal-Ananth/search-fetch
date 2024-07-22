@@ -1,0 +1,43 @@
+* {
+    margin: 0px;
+}
+
+body,
+form,
+p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input:focus {
+    outline: none;
+}
+
+.display {
+    position: relative;
+    top: 10px;
+    border: 1px solid black;
+    overflow: scroll;
+    height: 94vh;
+
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(0, 0, 0, 0.500);
+    border-radius: 5%;
+    width: 300px;
+    margin: 10px;
+    /* padding: 5px; */
+    height: 170px;
+    box-shadow: 0 0px 3px;
+    text-transform: capitalize;
+}
+
+.card:hover {
+    background-color: rgb(229, 229, 229);
+}

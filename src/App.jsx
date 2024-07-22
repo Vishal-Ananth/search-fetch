@@ -12,7 +12,7 @@ function App() {
 
 	useEffect(() => {
 		if (localStorage.length === 0) {
-			fetch("https://pokeapi.co/api/v2/pokemon/?limit=100")
+			fetch("https://pokeapi.co/api/v2/pokemon/?limit=1024")
 				.then((response) => response.json())
 				.then((data) => {
 					setApiResult(data.results);
@@ -40,7 +40,9 @@ function App() {
 			const filteredValue = apiResult.filter((pokemon) =>
 				pokemon.name
 					.toLowerCase()
-					.includes(debouncedSearchValue.toLowerCase())
+					.includes(
+						debouncedSearchValue.toLowerCase().replaceAll(" ", "-")
+					)
 			);
 			setFilteredResult(filteredValue);
 		}
@@ -61,11 +63,13 @@ function App() {
 				></input>
 			</form>
 
+			{/* <div className="display"> */}
 			{debouncedSearchValue === "" ? (
 				<p>Search Pokedex</p>
 			) : filteredResult.length !== apiResult.length ? (
 				<PokemonList list={filteredResult}></PokemonList>
 			) : null}
+			{/* </div> */}
 		</>
 	);
 }
