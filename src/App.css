@@ -1,18 +1,35 @@
-hr {
-    width: 80vw;
+img,
+h1,
+p {
+    margin: 0;
+    padding-top: 10px;
 }
 
-a {
-    text-decoration: none;
-    color: black;
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid black;
+    width: 200px;
+    height: 200px;
+    border-radius: 5%;
+    box-shadow: 0 0 5px;
+    margin: 10px
 }
 
-a:hover {
-    background-color: grey;
-}
 
-ul {
+.display {
+    margin-top: 20px;
+    height: 90vh;
     overflow: scroll;
-    height: 800px;
+
+
+}
+
+.display h3 {
+    position: absolute;
+    margin: 0px;
     width: 100vw;
 }
