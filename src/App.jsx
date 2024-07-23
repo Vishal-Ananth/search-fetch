@@ -7,7 +7,7 @@ function App() {
 	const [apiResult, setApiResult] = useState([]);
 	const [filteredResult, setFilteredResult] = useState([]);
 	const [searchItem, setSearchItem] = useState("");
-	const debouncedSearchValue = useDebounce(searchItem, 1000);
+	const debouncedSearchValue = useDebounce(searchItem, 500);
 
 	useEffect(() => {
 		if (localStorage.length === 0) {
@@ -49,11 +49,15 @@ function App() {
 
 	function handleChange(e) {
 		setSearchItem(e.target.value);
+
+	}
+	function handleSubmit(e) {
+		e.preventDefault();
 	}
 
 	return (
 		<>
-			<form>
+			<form onSubmit={handleSubmit}>
 				<input
 					type="text"
 					value={searchItem}
@@ -62,13 +66,13 @@ function App() {
 				></input>
 			</form>
 
-			<div className="display">
 			{debouncedSearchValue === "" ? (
 				<p>Search Pokedex</p>
 			) : filteredResult.length !== apiResult.length ? (
-				<PokemonList list={filteredResult}></PokemonList>
+				<PokemonList
+					list={filteredResult}
+				></PokemonList>
 			) : null}
-			</div>
 		</>
 	);
 }
