@@ -5,9 +5,11 @@ export default function useSearch(query, page) {
 	const [hasNext, setHasNext] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
+	const [totalItems, setTotalItems] = useState(0);
 
 	useEffect(() => {
 		setRepos([]);
+		setTotalItems(0);
 	}, [query]);
 
 	useEffect(() => {
@@ -21,10 +23,16 @@ export default function useSearch(query, page) {
 					setLoading(false);
 					return res.json();
 				})
-				.then((data) => setRepos((prev) => [...prev, ...data.items]))
-				.catch((err) => setError(true));
+				.then((data) => {
+					setRepos((prev) => [...prev, ...data.items]);
+					setTotalItems(data.total_count);
+				})
+				.catch((err) => {
+					setError(true);
+					setLoading(false);
+				});
 		}
 	}, [query, page]);
 
-	return { repos, hasNext, loading, error };
+	return { repos, hasNext, loading, error, totalItems };
 }
