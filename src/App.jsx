@@ -1,55 +1,19 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import PokemonList from "./PokemonList";
-import useDebounce from "./useDebounce";
+import useDebounce from "./utils/useDebounce";
+import useSearch from "./utils/useSearch";
 
 function App() {
-	const [apiResult, setApiResult] = useState([]);
-	const [filteredResult, setFilteredResult] = useState([]);
-	const [searchItem, setSearchItem] = useState("");
-	const debouncedSearchValue = useDebounce(searchItem, 500);
+	const [searchQuery, setSearchQuery] = useState("");
+	const debouncedQuery = useDebounce(searchQuery, 1000);
+	const [page, setPage] = useState(1);
 
-	useEffect(() => {
-		if (localStorage.length === 0) {
-			fetch("https://pokeapi.co/api/v2/pokemon/?limit=1024")
-				.then((response) => response.json())
-				.then((data) => {
-					setApiResult(data.results);
-					setFilteredResult(data.results);
-					localStorage.setItem(
-						"results",
-						JSON.stringify(data.results)
-					);
-				})
-				.catch((err) => {
-					console.error(err);
-				});
-
-			console.log("first");
-		} else {
-			setApiResult(JSON.parse(localStorage.getItem("results")));
-			setFilteredResult(JSON.parse(localStorage.getItem("results")));
-
-			console.log("second");
-		}
-	}, []);
-
-	useEffect(() => {
-		if (searchItem !== null) {
-			const filteredValue = apiResult.filter((pokemon) =>
-				pokemon.name
-					.toLowerCase()
-					.includes(
-						debouncedSearchValue.toLowerCase().replaceAll(" ", "-")
-					)
-			);
-			setFilteredResult(filteredValue);
-		}
-	}, [debouncedSearchValue]);
+	const { repos, hasNext, loading, error } = useSearch(debouncedQuery, page);
 
 	function handleChange(e) {
-		setSearchItem(e.target.value);
-
+		setSearchQuery(e.target.value);
+		setPage(1);
 	}
 	function handleSubmit(e) {
 		e.preventDefault();
@@ -58,23 +22,34 @@ function App() {
 	return (
 		<>
 			<form onSubmit={handleSubmit}>
-				<input
-					type="text"
-					value={searchItem}
-					placeholder="Search ..."
-					onChange={handleChange}
-				></input>
+				<input type="text" placeholder="Search ..." onChange={handleChange}></input>
 			</form>
-
-			{debouncedSearchValue === "" ? (
-				<p>Search Pokedex</p>
-			) : filteredResult.length !== apiResult.length ? (
-				<PokemonList
-					list={filteredResult}
-				></PokemonList>
-			) : null}
+			{debouncedQuery !== ""
+				? repos.map((val) => (
+						<div key={val.id} className="item">
+							<div>Repsoitory Name : {val.full_name}</div>
+							<div>Owner : {val.owner.login}</div>
+							<div>Language : {val.language}</div>
+							<div>Watchers : {val.watchers}</div>
+						</div>
+				  ))
+				: null}
+			<div>{loading && "loading...."}</div>
+			<div>{error && "Error!!!"}</div>
 		</>
 	);
 }
 
 export default App;
+
+/*
+
+fetch algorithm 
+
+fetch(`https://api.github.com/search/repositories?q=${examplify}&per_page=10&page=${page}`)
+			.then((res) => {
+				setApiHeader([...res.headers][3]);
+				return res.json();
+			})
+			.then((data) => setApiResponse(data.items));
+*/
