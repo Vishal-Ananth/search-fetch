@@ -16,8 +16,14 @@ export default function useSearch(query, page) {
 		if (query !== "") {
 			setLoading(true);
 			setError(false);
-			fetch(`https://api.github.com/search/repositories?q=${query}&per_page=10&page=${page}`)
+			const url = new URL("https://api.github.com/search/repositories");
+			url.searchParams.set("q", query);
+			url.searchParams.set("per_page", 10);
+			url.searchParams.set("page", page);
+
+			fetch(url)
 				.then((res) => {
+					console.log();
 					const check = res.headers.get("link").includes('rel="next"');
 					setHasNext(check);
 					setLoading(false);

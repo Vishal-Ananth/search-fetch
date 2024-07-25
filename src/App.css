@@ -28,8 +28,21 @@
     background-color: aquamarine;
 }
 
+h3,
+ul {
+    margin: 0px;
+}
+
+.clip {
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
+}
+
 .loading {
-    background-color: chocolate;
+    background-color: rgb(27, 207, 227);
     color: white;
     width: 200px;
 }
@@ -38,4 +51,9 @@
     background-color: red;
     color: white;
     width: 200px;
+}
+
+.display {
+    height: 80vh;
+    overflow: scroll;
 }
