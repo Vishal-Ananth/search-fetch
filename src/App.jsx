@@ -8,7 +8,6 @@ function App() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [page, setPage] = useState(1);
 	const { repos, hasNext, loading, error, totalItems } = useSearch(searchQuery, page);
-
 	const observerRef = useRef();
 
 	const lastItemOnPage = useCallback((last) => {
