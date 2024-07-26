@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import "./App.css";
-import useDebounce from "./utils/useDebounce";
 import useSearch from "./utils/useSearch";
-import RepositoryList from "./RepositoryList";
+import { FixedSizeList } from "react-window";
+import RepositoryItem from "./RepositoryItem";
 
 function App() {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -50,29 +50,26 @@ function App() {
 			</form>
 
 			<h1>Total results : {totalItems}</h1>
+			<h2>Current : {repos.length}</h2>
 			{repos.length !== 0 && (
-				<div className="display">
-					{repos.map((val, index) =>
-						repos.length === index + 1 ? (
-							<RepositoryList
-								key={val.id}
-								item={val}
-								index={index}
-								lastItemOnPage={lastItemOnPage}
-							></RepositoryList>
-						) : (
-							<RepositoryList
-								key={val.id}
-								item={val}
-								index={index}
-								lastItemOnPage={null}
-							></RepositoryList>
-						)
+				<FixedSizeList
+					itemCount={totalItems}
+					itemSize={200}
+					height={600}
+					width={1000}
+					useIsScrolling
+				>
+					{({ index, style, isScrolling }) => (
+						<RepositoryItem
+							item={repos[index]}
+							style={style}
+							isScrolling={isScrolling}
+							index={index}
+						></RepositoryItem>
 					)}
-				</div>
+				</FixedSizeList>
 			)}
 
-			{/* {loading && <h2 className="loading">loading...</h2>} */}
 			{error && <h2 className="error">Oops Error !</h2>}
 		</>
 	);

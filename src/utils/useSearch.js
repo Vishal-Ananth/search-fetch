@@ -23,7 +23,7 @@ export default function useSearch(query, page) {
 
 			fetch(url)
 				.then((res) => {
-					console.log();
+					console.log(`new fetch for ${query}`);
 					const check = res.headers.get("link").includes('rel="next"');
 					setHasNext(check);
 					setLoading(false);
